@@ -39,8 +39,14 @@ public class Solutions {
 	}
 
 	public static void main(String[] args) {
-		new Solutions().testEquilibriumIndex();
-
+		// new Solutions().testEquilibriumIndex();
+		System.out.println("EquilibriumIndex(-1, 3, -4, 5, 1, -6, 2, 1) = "
+				+ new EquilibriumIndex().solution(new int[] { -1, 3, -4, 5, 1, -6, 2, 1 }));
+		// , 1381102575, -1381102575, 478702312, -478702312
+		System.out
+				.println("EquilibriumIndex(-1732587062, -1349106435, 670346028, 1, 670346028, -1349106435, -1732587062) = "
+						+ new EquilibriumIndex().solution(
+								new int[] { -1732587062, -1349106435, 670346028, 1, 670346028, -1349106435, -1732587062 }));
 		System.out.println("ArrayLeader(4, 2, 2, 3, 2, 4, 2, 2, 6, 4) = "
 				+ new ArrayLeader().solution(new int[] { 4, 2, 2, 3, 2, 4, 2, 2, 6, 4 }));
 		System.out.println("ArrayLeader(1, 1, 1, 50, 1) = " + new ArrayLeader().solution(new int[] { 1, 1, 1, 50, 1 }));
