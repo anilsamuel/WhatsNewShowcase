@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,8 +24,8 @@ import java.util.stream.IntStream;
 
 public class Main {
 
-	public static void main(String[] args) {
-		Day24.main(args);
+	public static void main(String[] args) throws ParseException {
+		Day29.main(args);
 	}
 	
 	public static Object copy(Object orig) {
@@ -1074,20 +1075,32 @@ levelOrder(BinaryTree t) {
 			}
 
 		}
-		private static SortedSet<Integer> set = new TreeSet<Integer>(); 
-		public static Node removeDuplicates(Node root) {
+		private static SortedSet<Integer> set = new TreeSet<Integer>();
+		
+		public static Node removeDuplicates1(Node head) {
 			// Write your code here
-			Node n = root;
-			while (n.next != null) {
-				if (!set.contains(n.next.data)) {
-					set.add(n.next.data);
+			Node cur = head, prev = null;
+			while (cur != null) {
+				if (!set.contains(cur.data)) {
+					set.add(cur.data);
+					prev = cur;
 				} else {
-					n.next = n.next.next;
+					prev.next = cur.next;
 				}
-				n = n.next;
+				cur = cur.next;
 			}
-			
-			return root;
+			return head;
+		}
+		
+		public static Node removeDuplicates2(Node head) {
+			Node newHead = null;
+			for(Node curr = head; curr != null; curr = curr.next){
+				if(!set.contains(curr.data)){
+					newHead = insert(newHead, curr.data);
+					set.add(curr.data);
+				}
+			}
+			return newHead;
 		}
 
 		public static Node insert(Node head, int data) {
@@ -1122,9 +1135,183 @@ levelOrder(BinaryTree t) {
 				int ele = sc.nextInt();
 				head = insert(head, ele);
 			}
-			head = removeDuplicates(head);
+			head = removeDuplicates1(head);
 			display(head);
 
+		}
+	}
+
+	static class Day25 {
+		public static void main(String[] args) {
+			/*
+			 * Enter your code here. Read input from STDIN. Print output to
+			 * STDOUT. Your class should be named Solution.
+			 */
+			Scanner scanner = new Scanner(System.in);
+			int n = scanner.nextInt();
+			int[] arr = new int[n];
+			for (int i = 0; i < n; i++) {
+				arr[i] = scanner.nextInt();
+			}
+			for(int i : arr){
+				if(!isPrime(i))
+					System.out.println(i + ":Not prime");
+				else
+					System.out.println(i + ":Prime");
+			}
+			scanner.close();
+		}
+
+		private static boolean isPrime(int i) {
+			if(i < 2)
+				return false;
+			else{
+				if(i % 2 == 0)
+					return false;
+				else {
+					boolean ret = true;
+					double j = i;//Math.sqrt(i);
+					while(j-- > 2){
+						if(i%j == 0){
+							ret = false;
+							break;
+						}
+					}
+/*					double sq = Math.sqrt(i);
+					for(int j = 2; i <= sq; j++) {
+					    if(i%j == 0){ //NOT PRIME
+					    	ret = false;
+					    	break;
+					    }
+					}
+*/					return ret;
+				}
+			}
+		}
+	}
+
+	static class Day26 {
+		public static void main(String[] args) {
+			Scanner scanner = new Scanner(System.in);
+			int aD = scanner.nextInt();
+			int aM = scanner.nextInt();
+			int aYYYY = scanner.nextInt();
+			int eD = scanner.nextInt();
+			int eM = scanner.nextInt();
+			int eYYYY = scanner.nextInt();
+			scanner.close();
+
+			try {
+				java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("ddMMyyyy");
+				java.time.LocalDate eDate = java.time.LocalDate.parse(String.format("%02d%02d%d", eD, eM, eYYYY),
+						formatter);
+				java.time.LocalDate aDate = java.time.LocalDate.parse(String.format("%02d%02d%d", aD, aM, aYYYY),
+						formatter);
+				long fine = 0;
+				long years = java.time.temporal.ChronoUnit.YEARS.between(eDate, aDate);
+				long months = java.time.temporal.ChronoUnit.MONTHS.between(eDate, aDate);
+				long days = java.time.temporal.ChronoUnit.DAYS.between(eDate, aDate);
+				if (years > 0) {
+					fine = 10000;
+				} else if (months > 0) {
+					fine = 500 * months;
+				} else if (days > 0) {
+					fine = 15 * days;
+				} else if (eDate.equals(aDate)) {
+					fine = 0;
+				}
+
+				System.out.println(fine);
+			} catch (Exception e) {
+				System.out.println(0);
+			}
+		}
+	}
+
+	static class Day28 {
+		public static void main(String[] args){
+			Scanner scanner = new Scanner(System.in);
+			int n = scanner.nextInt();
+			if(n < 2 || n > 30){
+				scanner.close();
+				return;
+			}
+			String[][] data = new String[n][2];
+			while(n-- > 0){
+				data[n][0] = scanner.next();
+				data[n][1] = scanner.next();
+			}
+			scanner.close();
+			
+			java.util.Arrays.sort(data, new java.util.Comparator<String[]>() {
+			    public int compare(String[] a, String[] b) {
+			        return b[0].compareTo(a[0]);
+			    }
+			});
+			
+			java.util.regex.Pattern fn = java.util.regex.Pattern.compile("^[a-z]{1,20}");
+			java.util.regex.Pattern e = java.util.regex.Pattern.compile("([a-z]+)@([a-z]+\\.[a-z]+){1}");
+			java.util.regex.Pattern gmail = java.util.regex.Pattern.compile("([a-z])+@gmail.com");
+			for(int i = data.length - 1; i >= 0; i--){
+				if(fn.matcher(data[i][0]).matches() && 
+						e.matcher(data[i][1]).matches() && 
+						gmail.matcher(data[i][1]).matches()
+					)
+                    System.out.println(data[i][0]);
+			}
+		}
+	}
+
+	static class Day29 {
+		static class BinaryString {
+
+			BinaryString(String string, Integer integer) {
+				for (byte b : string.getBytes()) {
+					// Perform a bitwise operation using byte and integer
+					// operands, save result as tmp:
+					int tmp = b | integer;
+					System.out.println(Integer.toBinaryString(b) + " OR " + Integer.toBinaryString(integer) + " = "
+							+ Integer.toBinaryString(tmp) + " = " + tmp);
+				}
+			}
+
+			public static void main(String[] args) {
+				new BinaryString("HackerRank", 8675309);
+			}
+		}
+		
+		public static void main(String[] args) {
+			Scanner scanner = new Scanner(System.in);
+			int t = scanner.nextInt();
+			if(t < 1 || t > Math.pow(10, 3)){
+				scanner.close();
+				return;
+			}
+			int[][] data = new int[t][2];
+			while(t-- > 0){
+				data[t][0] = scanner.nextInt();
+				data[t][1] = scanner.nextInt();
+			}
+			for(int i = data.length - 1; i >= 0; i--){
+				if (2 <= data[i][0] && data[i][0] <= Math.pow(10, 3) && 2 <= data[i][1] && data[i][1] <= data[i][0]) {
+					int result = 0;
+					for (int a = 1; a <= data[i][0] - 1; a++) {
+						for (int b = a + 1; b <= data[i][0] - 1; b++) {
+							int ab = a & b;
+							System.out.print(String.format("%d & %d = %d : ", a, b, ab));
+							/*System.out.println(Integer.toBinaryString(a) + " AND " + Integer.toBinaryString(b) + " = "
+									+ Integer.toBinaryString(ab) + " = " + ab);*/
+							if(ab > result && ab < data[i][1]){
+								System.out.println(String.format("%d > %d && %d < %d", ab, result, result, data[i][1]));
+								result = ab;
+							}
+						}
+					}
+					System.out.println(result);
+				}
+			}
+			
+			scanner.close();
 		}
 	}
 }
